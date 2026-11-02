@@ -1,0 +1,237 @@
+(footprint "TestPoint_Value"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "solder Pin_ with flat fork, hole diameter 0.7mm, length 6.5mm, width 1.8mm")
+	(tags "solder Pin_ with flat fork")
+	(property "Reference" "${VALUE}"
+		(at -1.5 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "865c818d-f4da-4c50-bfc3-d62e8ef1ff68")
+		(effects
+			(font
+				(size 0.7 0.7)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TestPoint_Small"
+		(at 0 -1.8 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "cdccf51e-756b-4c9d-89ef-5a066f352f20")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "57e0d5bd-923a-43a7-bfd5-49a0350aa9c7")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "test point"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "0c91d53f-49ab-4ac2-b634-9b8c4180b7d4")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property ki_fp_filters "Pin* Test*")
+	(sheetname "/")
+	(sheetfile "mipi-adapter.kicad_sch")
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -0.95 -0.95)
+		(end -0.95 0.95)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "99dc1790-e39f-49c3-86e5-b26a35f5ad46")
+	)
+	(fp_line
+		(start -0.95 0.95)
+		(end 0.9 0.95)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "a185ab57-d6a9-4655-af7f-9e6a5574f174")
+	)
+	(fp_line
+		(start 0.9 -0.95)
+		(end -0.95 -0.95)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f66af5af-caa0-4210-99b4-ed88ebec8739")
+	)
+	(fp_line
+		(start 0.9 -0.9)
+		(end 0.9 -0.95)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "797d59ec-903b-4956-b786-ea3186c5498e")
+	)
+	(fp_line
+		(start 0.9 0.95)
+		(end 0.9 -0.9)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "6644a7b8-36ee-40e3-afc5-0fdaaba90162")
+	)
+	(fp_line
+		(start -1.4 -1.2)
+		(end -1.4 1.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "af18ee19-2586-4128-817e-87fb38c7f40c")
+	)
+	(fp_line
+		(start -1.4 -1.2)
+		(end 1.35 -1.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "10458dea-a0a4-457e-9abe-5baecc94fe89")
+	)
+	(fp_line
+		(start 1.35 1.2)
+		(end -1.4 1.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "dbfd41ca-a38f-498f-a36c-bdce1dc4bcf6")
+	)
+	(fp_line
+		(start 1.35 1.2)
+		(end 1.35 -1.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "c0d28100-9ebe-40b7-b6ce-d2cd24ea2594")
+	)
+	(fp_line
+		(start -0.9 -0.25)
+		(end 0.85 -0.25)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "dd5b6ad9-ea7d-4465-945e-5c2ae7a5ecea")
+	)
+	(fp_line
+		(start -0.9 0.25)
+		(end -0.9 -0.25)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "334509c5-5364-40e6-9fa1-cd62851178b4")
+	)
+	(fp_line
+		(start 0.85 -0.25)
+		(end 0.85 0.25)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "86be453a-a64f-4438-a3e2-99cc34e2224e")
+	)
+	(fp_line
+		(start 0.85 0.25)
+		(end -0.9 0.25)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "2657f7d9-82b8-45ef-9d5f-0b9701ca87a6")
+	)
+	(fp_text user "${VALUE}"
+		(at -0.95 0 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "f32a6858-c2b3-4f1d-9dee-7844284915e0")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.1)
+			)
+			(justify right)
+		)
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 1.8 0)
+		(layer "F.Fab")
+		(uuid "a3b34ce3-bcf9-43e2-a465-00b8a9f43785")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 0 0)
+		(size 1.4 1.4)
+		(drill 0.7)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "85e86b00-0abe-4e6b-b256-e93168bac88f")
+	)
+	(embedded_fonts no)
+	(model "${KICAD10_3DMODEL_DIR}/Connector_Pin.3dshapes/Pin_D0.7mm_L6.5mm_W1.8mm_FlatFork.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -180)
+		)
+	)
+)
