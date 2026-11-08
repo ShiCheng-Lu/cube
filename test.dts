@@ -1,0 +1,8 @@
+    
+    
+    
+    /* Maps Pin 17 of MIPI connector, 12 for disp0, 14 for disp1 */
+    reset-gpios = <&rp1_gpio 14 1>;
+    
+    /* Maps Pin 18 of MIPI connector, 13 for disp0, 15 for disp1 */
+    enable-gpios = <&rp1_gpio 15 0>; 
