@@ -1,0 +1,15 @@
+DRIVER_NAME = ai-driver  # vc4-kms-dsi-z50006.dts
+DTS_FILE = ai-overlay.dts
+
+obj-m += panel-z50006.o
+
+KDIR ?= /lib/modules/$(shell uname -r)/build
+
+all:
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
+	cpp -nostdinc -I /usr/include -undef -x assembler-with-cpp $(DTS_FILE) vc4-kms-dsi-z50006.pre.dts
+	dtc -@ -I dts -O dtb -o vc4-kms-dsi-z50006.dtbo vc4-kms-dsi-z50006.pre.dts
+
+clean:
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
+	rm -f vc4-kms-dsi-z50006.pre.dts vc4-kms-dsi-z50006.dtbo

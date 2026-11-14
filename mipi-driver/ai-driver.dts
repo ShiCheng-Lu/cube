@@ -1,0 +1,38 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	compatible = "brcm,bcm2712";
+
+	fragment@0 {
+		target = <&dsi1>;
+		__overlay__ {
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port {
+				dsi_out: endpoint {
+					remote-endpoint = <&panel_in>;
+					data-lanes = <1 2>;
+					/* invert lane polarities because the raspberry pi's outputs are reversed */
+					lane-polarities = <1 1 1>;
+				};
+			};
+
+			panel: panel@0 {
+				compatible = "custom,z50006-720x720";
+				reg = <0>;
+				reset-gpios = <&rp1_gpio 46 GPIO_ACTIVE_LOW>;
+
+				port {
+					panel_in: endpoint {
+						remote-endpoint = <&dsi_out>;
+					};
+				};
+			};
+		};
+	};
+};

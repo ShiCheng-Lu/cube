@@ -6,15 +6,20 @@
 ## Back mode (normal operation)
     read register
     step 1: command:            F2 AA 55 0F F0 68
-    step 2: read instruction:   F3 <address>
+    step 2: read instruction:   F3 <read address>
 
     write register
     step 1: command:            F2 AA 55 0F F0 68
-    step 2: write instruction:  F2 <address>
+    step 2: write instruction:  F2 <write address>
 
 ## Non backdoor mode (not normally used)
     read register
-    ???
+    step 1: command  0x20011120
+    can directly output the register at 0x20011120
+
+    write register
+    step 1: command 0x40008078 03
+    which directly writes 0x03 (??? how does this work? how does the chip know if it's a read or write???)
 
 ## Touch panel interrupt usage
     Interrupt triggers on falling edge, and is auto cleared, while touch is detected, interrupt is continuously re-triggered.
