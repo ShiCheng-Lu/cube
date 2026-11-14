@@ -1,0 +1,32 @@
+/dts-v1/;
+/plugin/;
+
+&rp1_dsi1 {
+    status = "okay";
+
+    #address-cells = <1>;
+    #size-cells = <0>;
+
+    panel@0 {
+        compatible = "custom,jd9365-panel";
+        reg = <0>;
+
+        /* Maps Pin 17 of MIPI connector, 34 for disp0, 46 for disp1 */
+        reset = <&rp1_gpio 14 1>;
+        
+        /* Maps Pin 18 of MIPI connector, 35 for disp0, 48 for disp1 */
+        backlight = <&rp1_gpio 15 0>;
+
+        ports {
+            #address-cells = <1>;
+            #size-cells = <0>;
+
+            port@0 {
+                reg = <0>;
+                panel_in: endpoint {
+                    remote-endpoint = <&rp1_dsi1_out>;
+                };
+            };
+        };
+    };
+};

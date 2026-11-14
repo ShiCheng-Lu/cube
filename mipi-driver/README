@@ -1,0 +1,18 @@
+This is the driver
+
+
+
+
+```
+sudo apt update
+sudo apt install linux-headers-rpi-v
+```
+
+```
+make
+```
+
+
+
+GPIO pin functions, 
+https://lists.infradead.org/pipermail/linux-arm-kernel/2024-October/966755.html
