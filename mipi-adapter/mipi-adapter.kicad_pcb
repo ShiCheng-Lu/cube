@@ -1271,7 +1271,7 @@
 			(at -5.955 -3.685 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "d5300b54-684e-4f7f-be35-f2b14ab8e618")
+			(uuid "ed6a77f3-d47a-484a-b7f0-ae90ea0ec149")
 			(effects
 				(font
 					(size 1 1)
@@ -1282,7 +1282,7 @@
 		(property "Value" "Conn_01x30_Socket"
 			(at 0.5 4.165 0)
 			(layer "F.Fab")
-			(uuid "0512cd07-3508-4a32-bca3-f700291d30b0")
+			(uuid "2ee5c3a4-6a09-425c-9e62-eba7ff323a0e")
 			(effects
 				(font
 					(size 1 1)
@@ -1294,7 +1294,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "28329267-91f5-4007-a47b-7f57521c2d6a")
+			(uuid "93be8d15-4c33-4725-80f1-fb38b38b12f4")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1305,7 +1305,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "8feedbdb-2dc6-4578-a038-52f817b0c9ab")
+			(uuid "4f6db1fa-6929-44d8-881a-8d390dc10436")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1328,15 +1328,6 @@
 		(path "/65f51343-f147-4757-9198-b0b938efb733")
 		(sheetname "/")
 		(sheetfile "mipi-adapter.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15"
-					"16" "17" "18" "19" "20" "21" "22" "23" "24" "25" "26" "27" "28" "29"
-					"30" "SH"
-				)
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1400,8 +1391,8 @@
 			(uuid "af4bec72-de4a-4233-bf9a-1f92fd2ac2fc")
 		)
 		(fp_circle
-			(center 7.29 -3.01)
-			(end 7.39 -3.01)
+			(center 7.29 -2.75)
+			(end 7.39 -2.75)
 			(stroke
 				(width 0.2)
 				(type solid)
@@ -1491,8 +1482,8 @@
 			(uuid "c3a3ab3e-0b77-486d-a3aa-d43e962ad164")
 		)
 		(fp_circle
-			(center 7.29 -3.01)
-			(end 7.39 -3.01)
+			(center 7.29 -2.75)
+			(end 7.39 -2.75)
 			(stroke
 				(width 0.2)
 				(type solid)
@@ -1842,17 +1833,6 @@
 			(uuid "60e23f20-502e-4e78-859e-e1c19c7d5646")
 		)
 		(embedded_fonts no)
-		(model "${KIPRJMOD}/3dmodels/TF38-30S-0.5SV-830_.step"
-			(offset
-				(xyz 8.34 -1.5 0)
-			)
-			(scale
-				(xyz 1 1 1)
-			)
-			(rotate
-				(xyz -0 -0 -0)
-			)
-		)
 	)
 	(footprint "Capacitor_SMD:C_0402_1005Metric"
 		(layer "F.Cu")
@@ -2032,6 +2012,7 @@
 		(property "Reference" "J5"
 			(at 0 -4.303 90)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "c9dbdf1e-07b2-46d6-8ae2-82d538c66107")
 			(effects
 				(font
@@ -3871,14 +3852,6 @@
 		(path "/c2f2b0f7-d442-4f1c-9a0a-6a669f61681b")
 		(sheetname "/")
 		(sheetfile "mipi-adapter.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15"
-					"16" "17" "18" "19" "20" "21" "22" "SH"
-				)
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3942,8 +3915,8 @@
 			(uuid "a7eb2506-f56a-4862-8ea6-fc5eb6dd31af")
 		)
 		(fp_circle
-			(center 5.29 -3.01)
-			(end 5.39 -3.01)
+			(center 5.29 -2.75)
+			(end 5.39 -2.75)
 			(stroke
 				(width 0.2)
 				(type solid)
@@ -4033,8 +4006,8 @@
 			(uuid "f0cc84f4-4a39-467f-bf25-610434889695")
 		)
 		(fp_circle
-			(center 5.29 -3.01)
-			(end 5.39 -3.01)
+			(center 5.29 -2.75)
+			(end 5.39 -2.75)
 			(stroke
 				(width 0.2)
 				(type solid)
@@ -4304,17 +4277,6 @@
 			(uuid "ae46b296-b665-4fb8-b0c6-2bea84bc446b")
 		)
 		(embedded_fonts no)
-		(model "${KIPRJMOD}/3dmodels/TF38-22S-0.5SV_830_.step"
-			(offset
-				(xyz -6.31 -1.5 0)
-			)
-			(scale
-				(xyz 1 1 1)
-			)
-			(rotate
-				(xyz -0 -0 -0)
-			)
-		)
 	)
 	(footprint "MountingHole:ToolingHole_1.152mm"
 		(layer "F.Cu")

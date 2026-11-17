@@ -1,12 +1,23 @@
-# Name of your module (matches the C filename without .c)
-obj-m += jd9365tx_dsi.o
+obj-m += panel-jadard-jd9365tx.o
 
-# Point to the active kernel build directory
 KDIR ?= /lib/modules/$(shell uname -r)/build
-PWD  := $(shell pwd)
 
-default:
-	$(MAKE) -C $(KDIR) M=$(PWD) modules
+OVERLAY  = vc4-kms-dsi-ht05s-30mi-a1
+DTS_FILE = $(OVERLAY)-overlay.dts
+
+all: module overlay
+
+module:
+	$(MAKE) -C $(KDIR) M=$(CURDIR) modules
+
+overlay: $(OVERLAY).dtbo
+
+$(OVERLAY).dtbo: $(DTS_FILE)
+	cpp -nostdinc -I $(KDIR)/include -undef -x assembler-with-cpp $< $(OVERLAY).pre.dts
+	dtc -@ -I dts -O dtb -o $@ $(OVERLAY).pre.dts
 
 clean:
-	$(MAKE) -C $(KDIR) M=$(PWD) clean
+	$(MAKE) -C $(KDIR) M=$(CURDIR) clean
+	rm -f $(OVERLAY).pre.dts $(OVERLAY).dtbo
+
+.PHONY: all module overlay clean

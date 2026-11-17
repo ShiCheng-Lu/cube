@@ -1,18 +1,236 @@
-This is the driver
+JD9365TX MIPI-DSI panel driver (HT05S-30MI-A1, 5.08" 720x720, 4-lane)
+for Raspberry Pi 5 / CM5 running Raspberry Pi OS (Bookworm or later).
+
+Files
+  panel-jadard-jd9365tx.c                 kernel module (DRM panel driver)
+  vc4-kms-dsi-ht05s-30mi-a1-overlay.dts   device tree overlay for the panel
+
+Build outputs
+  panel-jadard-jd9365tx.ko                kernel module
+  vc4-kms-dsi-ht05s-30mi-a1.dtbo          compiled overlay
+
+The driver needs kernel 6.12 or newer (it uses `mipi_dsi_multi_context`).
+
+There are two ways to build:
+  A. natively on the Pi (simple, slower)
+  B. cross-compile from WSL / Ubuntu on x86 (needs only the Pi's `uname -r`)
+
+Either way, finish with "Install on the Pi" below.
 
 
+## A. Build on the Pi
 
+### A1. Bootstrap (run once)
+
+```
+# Bring the system (and kernel) up to date first, so the headers match
+sudo apt update
+sudo apt full-upgrade -y
+sudo reboot
+```
+
+After the reboot:
+
+```
+# Compiler, make, cpp, etc.
+sudo apt install -y build-essential
+
+# Kernel headers for the *running* kernel (provides /lib/modules/$(uname -r)/build)
+sudo apt install -y linux-headers-$(uname -r)
+
+# Device tree compiler, for building the overlay
+sudo apt install -y device-tree-compiler
+
+# Optional: rebuild the module automatically on kernel upgrades
+sudo apt install -y dkms
+```
+
+Check that the headers are in place:
+
+```
+ls /lib/modules/$(uname -r)/build/Makefile
+```
+
+If `linux-headers-$(uname -r)` is not found, install the meta package that
+matches your kernel flavour instead (`uname -r` shows which one):
+
+```
+sudo apt install -y linux-headers-rpi-2712   # Pi 5 / CM5 kernel (...-rpi-2712)
+sudo apt install -y linux-headers-rpi-v8     # Pi 3/4/5 generic arm64 kernel (...-rpi-v8)
+```
+
+### A2. Build
+
+```
+make          # module + overlay
+make module   # module only
+make overlay  # overlay only
+make clean
+```
+
+## B. Cross-compile from WSL (Ubuntu on x86)
+
+Everything is downloaded from the Raspberry Pi OS package archive; the only
+thing needed from the Pi is the output of `uname -r` (and, for some kernel
+versions, which OS release it runs; see B2).
+
+The Pi's headers package can't be used directly on x86 (its build helpers are
+arm64 binaries), so the module is built against the exact source of the Pi's
+kernel, prepared with the Pi's `.config` and `Module.symvers`. No full kernel
+build is needed, only `modules_prepare` (a few minutes).
+
+Everything is downloaded and built in `rpi-build/` inside this driver
+directory (one subdirectory per kernel version; it is git-ignored).
+
+If this directory is on the Windows drive (`/mnt/c/...`), `rpi-build/` must be
+made case-sensitive before anything is extracted into it (B3 does this): the
+kernel source contains files whose names differ only in case (e.g.
+`xt_DSCP.h` / `xt_dscp.h`), and Windows folders are case-insensitive by
+default, so extraction would silently overwrite files. Building on `/mnt/c`
+is also slower than on the Linux filesystem, but `modules_prepare` is small.
+
+### B1. Install tools (once)
 
 ```
 sudo apt update
-sudo apt install linux-headers-rpi-v
+sudo apt install -y bc bison flex libssl-dev libelf-dev libncurses-dev make \
+    crossbuild-essential-arm64 device-tree-compiler dpkg-dev kmod curl xz-utils
 ```
 
+### B2. Find the Pi's kernel package
+
+Run all of B2 to B5 in the same shell, starting from this driver directory.
+
 ```
-make
+cd /mnt/c/users/shich/projects/cube/mipi-driver   # this driver directory
+DRIVER_DIR=$PWD
+PI_REL=6.18.50+rpt-rpi-2712        # <-- paste the Pi's `uname -r` here
+PI_VER=${PI_REL%%+*}               # e.g. 6.18.50
+POOL=http://archive.raspberrypi.com/debian/pool/main/l/linux
+DEB_VER=${PI_VER}-1+rpt1           # Debian version of the package (usual case)
+
+# Check the package exists; this also lists any other builds of the same kernel
+curl -s $POOL/ | grep -o "linux-headers-${PI_REL}_[^\"]*_arm64.deb" | sort -u
+```
+
+**Note: check the curl output against `DEB_VER`.** The usual result is a
+line ending in `_${PI_VER}-1+rpt1_arm64.deb` (Raspberry Pi OS 13 "Trixie"),
+which matches the default. If it shows something different:
+
+- **A different version** (e.g. `..._6.12.87-1+rpt1~bookworm_arm64.deb`, or
+  `-1+rpt1~bpo12+1`, `-1+rpt2`, ...): copy the part between `${PI_REL}_` and
+  `_arm64.deb` into `DEB_VER`, e.g. `DEB_VER=6.12.87-1+rpt1~bookworm`.
+- **Two lines** (`-1+rpt1` and `-1+rpt1~bookworm`): keep the default if the
+  Pi runs Trixie; use `DEB_VER=${PI_VER}-1+rpt1~bookworm` if it runs
+  Bookworm.
+- **Nothing:** `PI_REL` is mistyped, or the kernel is not a Raspberry Pi OS
+  package (e.g. a self-built kernel); this method won't work for it.
+
+The Trixie and Bookworm builds of the same kernel use different compilers and
+have different symbol CRCs, so a module built against the wrong one will refuse
+to load. If you have the Pi's `uname -a` (or `uname -v`), it names the exact
+Debian version, e.g. `... Debian 1:6.12.75-1+rpt1~bookworm (2025-...)`.
+
+### B3. Download the headers and the exact kernel source
+
+```
+mkdir -p "$DRIVER_DIR/rpi-build"
+# On /mnt/c only: make rpi-build case-sensitive (no admin needed). Must run
+# before the subdirectories below are created; they inherit the setting.
+fsutil.exe file setCaseSensitiveInfo "$(wslpath -w "$DRIVER_DIR/rpi-build")" enable
+
+BUILD=$DRIVER_DIR/rpi-build/$PI_REL
+mkdir -p "$BUILD" && cd "$BUILD"
+
+# .config, Module.symvers and kernel.release of the Pi's kernel
+curl -fLO "$POOL/linux-headers-${PI_REL}_${DEB_VER}_arm64.deb"
+dpkg-deb -x "linux-headers-${PI_REL}_${DEB_VER}_arm64.deb" headers
+HDR=$PWD/headers/usr/src/linux-headers-$PI_REL
+cat $HDR/include/config/kernel.release      # must print $PI_REL
+
+# Kernel source: upstream tarball + Debian/Raspberry Pi patches (~150 MB)
+curl -fLO "$POOL/linux_${PI_VER}.orig.tar.xz"
+curl -fLO "$POOL/linux_${DEB_VER}.debian.tar.xz"
+curl -fLO "$POOL/linux_${DEB_VER}.dsc"
+dpkg-source -x "linux_${DEB_VER}.dsc" linux   # applies the patches, incl. rpi/rpi.patch
+```
+
+`dpkg-source` may warn that it cannot verify the signature; that is fine.
+
+### B4. Prepare the source tree
+
+```
+cd "$BUILD/linux"
+export ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+
+cp $HDR/.config .config
+# The Pi's .config carries a stale CONFIG_LOCALVERSION ("-v8-16k"); Debian sets
+# the real suffix (e.g. "+rpt-rpi-2712") at package build time. Put the real
+# suffix in the config so every make in this tree computes the Pi's release.
+./scripts/config --set-str LOCALVERSION "${PI_REL#$PI_VER}" --disable LOCALVERSION_AUTO
+make olddefconfig
+make KERNELRELEASE=$PI_REL modules_prepare
+cp $HDR/Module.symvers .
+
+cat include/config/kernel.release           # must print exactly $PI_REL
+grep UTS_RELEASE include/generated/utsrelease.h   # must show "$PI_REL"
+make -s LOCALVERSION= kernelrelease         # must also print $PI_REL
+```
+
+The release string must be the Pi's full `uname -r` (e.g.
+`6.18.50+rpt-rpi-2712`), not just the version plus flavour. If any of the
+three checks prints something else (e.g. `6.18.50-v8-16k`), the module will
+be rejected by the Pi: redo B4 from `cp $HDR/.config .config`.
+
+`olddefconfig` may adjust a few compiler-dependent options (Ubuntu's
+cross-gcc is a different version from the one the Pi kernel was built with).
+That doesn't affect loading the module: the version string and symbol CRCs
+come from the Pi's files.
+
+### B5. Build the driver and copy it to the Pi
+
+```
+cd "$DRIVER_DIR"
+make KDIR="$BUILD/linux" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+
+modinfo panel-jadard-jd9365tx.ko | grep vermagic   # must start with $PI_REL
+scp panel-jadard-jd9365tx.ko vc4-kms-dsi-ht05s-30mi-a1.dtbo pi@<pi-host>:~
+```
+
+After the Pi's kernel is updated, repeat B2 to B4 with the new `uname -r`
+(each kernel gets its own directory under `rpi-build/`). Old ones can be
+deleted with `rm -rf rpi-build/<old uname -r>`.
+
+
+## Install on the Pi
+
+Run from the directory holding the `.ko` and `.dtbo` (the repo for A, `~` for B).
+
+```
+# Kernel module
+sudo install -D -m 644 panel-jadard-jd9365tx.ko \
+    /lib/modules/$(uname -r)/updates/panel-jadard-jd9365tx.ko
+sudo depmod -a
+
+# Overlay
+sudo cp vc4-kms-dsi-ht05s-30mi-a1.dtbo /boot/firmware/overlays/
+```
+
+Add to `/boot/firmware/config.txt`, then reboot:
+
+```
+dtoverlay=vc4-kms-dsi-ht05s-30mi-a1
+```
+
+Verify after reboot:
+
+```
+lsmod | grep jd9365tx
+dmesg | grep -i -e dsi -e jd9365
 ```
 
 
+## Notes
 
 GPIO pin functions,
 https://lists.infradead.org/pipermail/linux-arm-kernel/2024-October/966755.html
