@@ -79,15 +79,13 @@ arm64 binaries), so the module is built against the exact source of the Pi's
 kernel, prepared with the Pi's `.config` and `Module.symvers`. No full kernel
 build is needed, only `modules_prepare` (a few minutes).
 
-Everything is downloaded and built in `rpi-build/` inside this driver
-directory (one subdirectory per kernel version; it is git-ignored).
-
-If this directory is on the Windows drive (`/mnt/c/...`), `rpi-build/` must be
-made case-sensitive before anything is extracted into it (B3 does this): the
-kernel source contains files whose names differ only in case (e.g.
-`xt_DSCP.h` / `xt_dscp.h`), and Windows folders are case-insensitive by
-default, so extraction would silently overwrite files. Building on `/mnt/c`
-is also slower than on the Linux filesystem, but `modules_prepare` is small.
+Everything is downloaded and built in `/rpi-build/` on the Linux filesystem
+(one subdirectory per kernel version), even if this driver directory is on
+the Windows drive. Don't put it under `/mnt/c`: extracting the kernel source
+(about 90,000 small files) takes about a minute on the Linux filesystem but a
+very long time on `/mnt/c`, with no output while it runs. Windows folders are
+also case-insensitive by default, which silently overwrites kernel files
+whose names differ only in case (e.g. `xt_DSCP.h` / `xt_dscp.h`).
 
 ### B1. Install tools (once)
 
@@ -95,6 +93,10 @@ is also slower than on the Linux filesystem, but `modules_prepare` is small.
 sudo apt update
 sudo apt install -y bc bison flex libssl-dev libelf-dev libncurses-dev make \
     crossbuild-essential-arm64 device-tree-compiler dpkg-dev kmod curl xz-utils
+
+# Build directory on the Linux filesystem, owned by you
+sudo mkdir -p /rpi-build
+sudo chown "$USER:" /rpi-build
 ```
 
 ### B2. Find the Pi's kernel package
@@ -102,7 +104,6 @@ sudo apt install -y bc bison flex libssl-dev libelf-dev libncurses-dev make \
 Run all of B2 to B5 in the same shell, starting from this driver directory.
 
 ```
-cd /mnt/c/users/shich/projects/cube/mipi-driver   # this driver directory
 DRIVER_DIR=$PWD
 PI_REL=6.18.50+rpt-rpi-2712        # <-- paste the Pi's `uname -r` here
 PI_VER=${PI_REL%%+*}               # e.g. 6.18.50
@@ -134,12 +135,7 @@ Debian version, e.g. `... Debian 1:6.12.75-1+rpt1~bookworm (2025-...)`.
 ### B3. Download the headers and the exact kernel source
 
 ```
-mkdir -p "$DRIVER_DIR/rpi-build"
-# On /mnt/c only: make rpi-build case-sensitive (no admin needed). Must run
-# before the subdirectories below are created; they inherit the setting.
-fsutil.exe file setCaseSensitiveInfo "$(wslpath -w "$DRIVER_DIR/rpi-build")" enable
-
-BUILD=$DRIVER_DIR/rpi-build/$PI_REL
+BUILD=/rpi-build/$PI_REL
 mkdir -p "$BUILD" && cd "$BUILD"
 
 # .config, Module.symvers and kernel.release of the Pi's kernel
@@ -198,8 +194,8 @@ scp panel-jadard-jd9365tx.ko vc4-kms-dsi-ht05s-30mi-a1.dtbo pi@<pi-host>:~
 ```
 
 After the Pi's kernel is updated, repeat B2 to B4 with the new `uname -r`
-(each kernel gets its own directory under `rpi-build/`). Old ones can be
-deleted with `rm -rf rpi-build/<old uname -r>`.
+(each kernel gets its own directory under `/rpi-build/`). Old ones can be
+deleted with `rm -rf /rpi-build/<old uname -r>`.
 
 
 ## Install on the Pi
