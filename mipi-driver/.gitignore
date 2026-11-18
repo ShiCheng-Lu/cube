@@ -1,10 +1,2 @@
-rpi-build/
-*.o
-*.mod
-*.mod.c
-*.cmd
-.*.cmd
-Module.symvers
-modules.order
-*.pre.dts
+outputs/
 .pi-release

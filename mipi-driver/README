@@ -6,9 +6,12 @@ Files
   vc4-kms-dsi-ht05s-30mi-a1-overlay.dts   device tree overlay for the panel
   Makefile, Kbuild                        build (Kbuild lists the module's objects)
 
-Build outputs
-  panel-jadard-jd9365tx.ko                kernel module
-  vc4-kms-dsi-ht05s-30mi-a1.dtbo          compiled overlay
+Build outputs (in outputs/, with the intermediate files; git-ignored)
+  outputs/panel-jadard-jd9365tx.ko        kernel module
+  outputs/vc4-kms-dsi-ht05s-30mi-a1.dtbo  compiled overlay
+
+`make export` copies the .ko and .dtbo next to the source, where they are
+tracked by git (`make clean` leaves those copies alone).
 
 The driver needs kernel 6.12 or newer (it uses `mipi_dsi_multi_context`).
 
@@ -24,7 +27,8 @@ make bootstrap  # once; runs bootstrap-wsl or bootstrap-rpi depending on
 make            # module + overlay
 make module   # module only
 make overlay  # overlay only
-make clean
+make export     # build, then copy the .ko and .dtbo here (tracked by git)
+make clean      # deletes outputs/
 ```
 
 Finish with "Install on the Pi" below.
@@ -49,7 +53,7 @@ before running `make`.
 ```
 make bootstrap PI_REL=6.18.50+rpt-rpi-2712    # <-- the Pi's `uname -r`
 make
-scp panel-jadard-jd9365tx.ko vc4-kms-dsi-ht05s-30mi-a1.dtbo pi@<pi-host>:~
+scp outputs/panel-jadard-jd9365tx.ko outputs/vc4-kms-dsi-ht05s-30mi-a1.dtbo pi@<pi-host>:~
 ```
 
 `make bootstrap` in WSL runs `bootstrap-wsl`, which saves `PI_REL` in
@@ -102,7 +106,7 @@ self-built kernel), and this method won't work for it.
 
 ## Install on the Pi
 
-Run from the directory holding the `.ko` and `.dtbo` (the repo for A, `~` for B).
+Run from the directory holding the `.ko` and `.dtbo` (`outputs/` for A, `~` for B).
 
 ```
 # Kernel module

@@ -2,7 +2,10 @@
 
 OVERLAY  = vc4-kms-dsi-ht05s-30mi-a1
 DTS_FILE = $(OVERLAY)-overlay.dts
+SRC      = panel-jadard-jd9365tx.c
 MODULE   = panel-jadard-jd9365tx.ko
+# Everything the build produces goes here
+OUT      = $(CURDIR)/outputs
 
 RPI_BUILD = /rpi-build
 POOL      = http://archive.raspberrypi.com/debian/pool/main/l/linux
@@ -40,23 +43,30 @@ all: module overlay
 
 module:
 	@echo "Building for $(if $(CROSS),$(PI_REL) (cross),the running kernel)"
-	$(MAKE) -C $(KDIR) M=$(CURDIR) $(CROSS) modules
+	# Kbuild writes its files next to the source, so build from links in OUT
+	mkdir -p $(OUT)
+	ln -sfn ../Kbuild ../$(SRC) $(OUT)/
+	$(MAKE) -C $(KDIR) M=$(OUT) $(CROSS) modules
 	if [ -n "$(CROSS)" ]; then
 	    # The Pi rejects the module unless this starts with its exact uname -r
-	    modinfo -F vermagic $(MODULE)
-	    modinfo -F vermagic $(MODULE) | grep -q '^$(PI_REL) ' || { echo "vermagic doesn't match $(PI_REL)"; exit 1; }
+	    modinfo -F vermagic $(OUT)/$(MODULE)
+	    modinfo -F vermagic $(OUT)/$(MODULE) | grep -q '^$(PI_REL) ' || { echo "vermagic doesn't match $(PI_REL)"; exit 1; }
 	fi
 
-overlay: $(OVERLAY).dtbo
+overlay: $(OUT)/$(OVERLAY).dtbo
 
-$(OVERLAY).dtbo: $(DTS_FILE)
-	cpp -nostdinc -I $(KDIR)/include -undef -x assembler-with-cpp $< $(OVERLAY).pre.dts
-	dtc -@ -I dts -O dtb -o $@ $(OVERLAY).pre.dts
+$(OUT)/$(OVERLAY).dtbo: $(DTS_FILE)
+	mkdir -p $(OUT)
+	cpp -nostdinc -I $(KDIR)/include -undef -x assembler-with-cpp $< $(OUT)/$(OVERLAY).pre.dts
+	dtc -@ -I dts -O dtb -o $@ $(OUT)/$(OVERLAY).pre.dts
 
-# Doesn't use KDIR, so it works without a kernel tree
+# Copy the finished module and overlay next to the source, where git tracks them
+export: all
+	cp $(OUT)/$(MODULE) $(OUT)/$(OVERLAY).dtbo $(CURDIR)/
+
+# Only removes outputs/; exported copies are kept
 clean:
-	rm -f *.o *.ko *.mod *.mod.c .*.cmd .*.o Module.symvers modules.order
-	rm -f $(OVERLAY).pre.dts $(OVERLAY).dtbo
+	rm -rf $(OUT)
 
 
 # ---- Runs bootstrap-wsl or bootstrap-rpi depending on where it's run
@@ -176,4 +186,4 @@ bootstrap-wsl:
 	echo "$$PI_REL" > $(CURDIR)/.pi-release
 	echo "Ready: run 'make' to cross-compile for $$PI_REL"
 
-.PHONY: all module overlay clean bootstrap bootstrap-rpi bootstrap-wsl
+.PHONY: all module overlay export clean bootstrap bootstrap-rpi bootstrap-wsl
