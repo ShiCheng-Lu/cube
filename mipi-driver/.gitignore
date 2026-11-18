@@ -7,3 +7,4 @@ rpi-build/
 Module.symvers
 modules.order
 *.pre.dts
+.pi-release
