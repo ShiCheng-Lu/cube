@@ -20,7 +20,7 @@ Initially I had high hopes that the display driver won't be an issue due to the 
 
 ### Software
 
-Rendering in C++ and vulkan
+Rendering in C++ and vulkan. Build instructions are in [`app/README.md`](app/README.md).
 
 ### Harderware
 
