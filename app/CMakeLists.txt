@@ -8,7 +8,7 @@
 # with compiled shaders in outputs/<config>/shaders/.
 
 cmake_minimum_required(VERSION 3.22)
-project(cube LANGUAGES CXX)
+project(cube LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -56,12 +56,21 @@ if(NOT TARGET glm::glm)
     add_library(glm::glm ALIAS glm)
 endif()
 
+# ufbx: single-file FBX loader (ufbx.c + ufbx.h), always downloaded
+FetchContent_Declare(ufbx
+    GIT_REPOSITORY https://github.com/ufbx/ufbx.git
+    GIT_TAG        v0.23.1
+    GIT_SHALLOW    TRUE)
+FetchContent_MakeAvailable(ufbx)
+add_library(ufbx STATIC ${ufbx_SOURCE_DIR}/ufbx.c)
+target_include_directories(ufbx PUBLIC ${ufbx_SOURCE_DIR})
+
 # ---- App --------------------------------------------------------------------
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 add_executable(cube ${SOURCES})
 
 target_include_directories(cube PRIVATE src)
-target_link_libraries(cube PRIVATE Vulkan::Vulkan glfw glm::glm)
+target_link_libraries(cube PRIVATE Vulkan::Vulkan glfw glm::glm ufbx)
 target_compile_definitions(cube PRIVATE
     # Radians everywhere, and Vulkan's 0..1 depth range instead of OpenGL's -1..1
     GLM_FORCE_RADIANS

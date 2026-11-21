@@ -35,6 +35,11 @@ cd outputs/release && ./cube
 
 Clean with `rm -rf outputs`.
 
+Test with test fbx, this came from ufbx sample data.
+```
+app/outputs/debug/cube test.fbx
+```
+
 ## Windows
 
 Needs Visual Studio 2022 with C++ and the Vulkan SDK. GLFW and GLM are
