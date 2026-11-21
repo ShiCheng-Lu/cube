@@ -1,0 +1,39 @@
+#version 450
+
+// Skins every vertex once per frame into world space. The per-display draws
+// then only need one matrix multiply per vertex (mesh.vert).
+
+layout(local_size_x = 64) in;
+
+struct SourceVertex {
+    vec4 position;   // xyz, w unused
+    vec4 normal;     // xyz, w unused
+    uvec4 joints;
+    vec4 weights;
+};
+
+struct SkinnedVertex {
+    vec4 position;   // world space, w = 1
+    vec4 normal;     // world space, w = 0
+};
+
+// geometry-to-world matrix of every bone, for this frame
+layout(std430, set = 0, binding = 0) readonly buffer Bones { mat4 bones[]; };
+layout(std430, set = 0, binding = 1) readonly buffer Sources { SourceVertex sources[]; };
+layout(std430, set = 0, binding = 2) writeonly buffer Skinned { SkinnedVertex skinned[]; };
+
+layout(push_constant) uniform Push { uint vertexCount; };
+
+void main() {
+    uint i = gl_GlobalInvocationID.x;
+    if (i >= vertexCount) return;
+
+    SourceVertex v = sources[i];
+    mat4 skin = v.weights.x * bones[v.joints.x]
+              + v.weights.y * bones[v.joints.y]
+              + v.weights.z * bones[v.joints.z]
+              + v.weights.w * bones[v.joints.w];
+
+    skinned[i].position = vec4((skin * vec4(v.position.xyz, 1.0)).xyz, 1.0);
+    skinned[i].normal = vec4(normalize(mat3(skin) * v.normal.xyz), 0.0);
+}

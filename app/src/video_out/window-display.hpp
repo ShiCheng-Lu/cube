@@ -17,6 +17,10 @@ public:
     bool shouldClose() const;
     void pollEvents() const;
 
+    /// number of left clicks since the last call
+    int takeClicks();
+
 private:
     GLFWwindow* window_ = nullptr;
+    int clicks_ = 0;
 };
